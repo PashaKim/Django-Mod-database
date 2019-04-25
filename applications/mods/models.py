@@ -26,9 +26,9 @@ class Language(models.Model):
 class Mod(models.Model):
     name = models.CharField(max_length=250)
     author = models.CharField(max_length=250, blank=True)
-    url = models.SlugField(allow_unicode=True, blank=True)
+    url = models.URLField(blank=True)
     title_image = models.ImageField(blank=True, upload_to='mod/title_image/')
-    rating = models.SmallIntegerField(blank=True)
+    rating = models.SmallIntegerField()
 
     tag = models.ManyToManyField(Tag, blank=True)
     compatibility_mod = models.ManyToManyField('Mod', blank=True, related_name='mod_compatibilities')
@@ -48,6 +48,17 @@ class Mod(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def tags_name(self):
+        return list(self.tag.all())
+
+    @property
+    def compatibility(self):
+        return list(self.mod_compatibilities.all())
+
+    @property
+    def incompatibility(self):
+        return list(self.mod_incompatibilities.all())
 
 class ModFile(models.Model):
     mod = models.ForeignKey(Mod, on_delete=models.CASCADE, related_name='mod_files')

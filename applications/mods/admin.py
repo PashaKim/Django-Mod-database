@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.html import format_html
+
 from .models import Mod, Tag, ModFile, ModImage, Language
 
 
@@ -32,13 +34,20 @@ class TagAdmin(admin.ModelAdmin):
 class ModAdmin(admin.ModelAdmin):
     fields = ('name', 'author', 'url', 'title_image', 'rating', 'tag', 'compatibility_mod', 'incompatibility_mod',
               'description', 'order_index', 'created', 'updated', 'is_visible')
-    list_display = ('id', 'name', 'author', 'url', 'rating', 'order_index', 'created', 'updated', 'is_visible')
+    list_display = ('id', 'name', 'author', 'url_link', 'rating', 'order_index', 'created', 'updated',
+                    'is_visible', 'tags_name', 'compatibility', 'incompatibility')
     list_filter = ('rating', 'created', 'updated', 'is_visible', 'tag')
     search_fields = ('name', 'author',)
     readonly_fields = ('created', 'updated',)
     list_display_links = ('id', 'name')
+    filter_horizontal = ('tag', 'compatibility_mod', 'incompatibility_mod')
     inlines = (ModFileInline, ModImageInline)
 
+    def url_link(self, obj):
+        # return '<a href="%s">%s</a>' % (obj.url, obj.url)
+        return format_html(u'<a href="%s">%s</a>' % (obj.url, obj.url))
+
+    url_link.allow_tags = True
 
 @admin.register(ModFile)
 class ModFileAdmin(admin.ModelAdmin):
